@@ -1,9 +1,8 @@
-#![no_std]
-
 extern crate alloc;
 
+use alloc::boxed::Box;
+use alloc::string::String;
 use alloc::vec::Vec;
-use core::error::Error;
 use core::fmt::{Debug, Display, Formatter};
 use core::mem;
 
@@ -11,19 +10,45 @@ use colored::{Color, ColoredString, Colorize, Styles};
 use itertools::Itertools;
 
 use crate::alloc::string::ToString;
-use alloc::string::String;
 
 #[derive(Debug)]
 struct ParsingError<'input, AstError: ParsingErrorDetail> {
     where_: Option<&'input str>,
-    ast_error: AstError,
+    ast_error: Option<AstError>,
     start_point_of_error: Option<(usize, usize)>,
     end_point_of_error: Option<(usize, usize)>,
+    causes: Vec<ParsingError<'input, Box<dyn ParsingErrorDetail>>>,
+}
+
+impl ParsingErrorDetail for Box<(dyn ParsingErrorDetail + 'static)> {
+    fn explain_error(&self) -> ErrorExplanation {
+        (&**self).explain_error()
+    }
+}
+
+impl<T: ParsingErrorDetail> ParsingErrorDetail for Box<T> {
+    fn explain_error(&self) -> ErrorExplanation {
+        (&**self).explain_error()
+    }
+}
+
+fn turn_parsing_error_trait_into_box_dyn<'a, Parsing: ParsingErrorDetail + 'a>(parsing: Parsing) -> Box<dyn ParsingErrorDetail + 'a> {
+    Box::new(parsing)
 }
 
 impl<'input, AstError: ParsingErrorDetail> ParsingError<'input, AstError> {
+    fn box_value(self) -> ParsingError<'input, Box<AstError>> {
+        ParsingError::<'input, Box<AstError>> {
+            where_: self.where_,
+            ast_error: self.ast_error.map(|error| Box::new(error)),
+            start_point_of_error: self.start_point_of_error,
+            end_point_of_error: self.end_point_of_error,
+            causes: self.causes,
+        }
+    }
+
     pub fn new(ast_error: AstError) -> Self {
-        Self { where_: None, ast_error, start_point_of_error: None, end_point_of_error: None }
+        Self { where_: None, ast_error: Some(ast_error), start_point_of_error: None, end_point_of_error: None, causes: Vec::new() }
     }
     pub fn location_str(mut self, location_str: &'input str) -> Self {
         self.where_ = Some(location_str);
@@ -38,58 +63,76 @@ impl<'input, AstError: ParsingErrorDetail> ParsingError<'input, AstError> {
         self
     }
     pub fn ast_error(mut self, ast_error: AstError) -> Self {
-        self.ast_error = ast_error;
+        self.ast_error = Some(ast_error);
         self
+    }
+
+    pub fn add_cause<'selflf, Parsing: ParsingErrorDetail + 'static>(&'selflf mut self, cause: ParsingError<'input, Parsing>) {
+        let explanation = cause.ast_error.map(|v| turn_parsing_error_trait_into_box_dyn(v));
+        self.causes.push(ParsingError {
+            where_: cause.where_,
+            ast_error: explanation,
+            start_point_of_error: cause.start_point_of_error,
+            end_point_of_error: cause.end_point_of_error,
+            causes: cause.causes,
+        });
     }
 
     fn to_display_string(&self, force_no_colorize: bool) -> String {
         if force_no_colorize { colored::control::set_override(false) }
-        let ErrorExplanation { complete_marker: general_colorization, explanation: error_description, colorization_markers: contents_mapper } = self.ast_error.explain_error();
+        let ErrorExplanation
+        {
+            complete_marker: general_colorizer,
+            explanation: error_description,
+            colorization_markers: substring_colorizers
+        }
+            = self.ast_error.as_ref().map(|ast_error| ast_error.explain_error()).unwrap_or_default();
         if force_no_colorize { colored::control::unset_override() }
         let where_ = match self.where_ {
-            Some(where_) => {
+            Some(where_) if !where_.trim().is_empty() => {
                 let mut where_string = String::new();
                 where_string.push_str("On: ");
                 if !force_no_colorize {
-                    let where_ = apply_substring_transformations(where_, contents_mapper, general_colorization);
+                    let where_ = colorize(where_, substring_colorizers, general_colorizer);
                     where_string.push_str(&where_);
                 } else {
                     where_string.push_str(where_);
                 }
                 where_string
-            },
+            }
             _ => String::new()
         };
         let location = match (self.start_point_of_error, self.end_point_of_error) {
             (Some((line_of_start, column_of_start)), Some((line_of_end, column_of_end))) => {
-                let mut location_string = String::new();
-                location_string.push_str("Where: From line ");
-                location_string.push_str(&line_of_start.to_string());
-                location_string.push_str(" and column ");
-                location_string.push_str(&column_of_start.to_string());
-                location_string.push_str(" to ");
-                location_string.push_str(&line_of_end.to_string());
-                location_string.push_str(" and column ");
-                location_string.push_str(&column_of_end.to_string());
-                location_string
+                "Where: From line ".to_string() + &line_of_start.to_string() + " and column " + &column_of_start.to_string()
+                    + " to " + &line_of_end.to_string() + " and column " + &column_of_end.to_string()
             }
             (Some((line_of_start, column_of_start)), _) => {
-                let mut location_string = String::new();
-                location_string.push_str("Where: On line ");
-                location_string.push_str(&line_of_start.to_string());
-                location_string.push_str(" and column ");
-                location_string.push_str(&column_of_start.to_string());
-                location_string
+                "Where: On line ".to_string() + &line_of_start.to_string() + " and column " + &column_of_start.to_string()
             }
             _ => String::new()
         };
         let description = {
-            let mut description_string = String::new();
-            description_string.push_str("Reason: ");
-            description_string.push_str(&error_description);
-            description_string
+            if !error_description.trim().is_empty() {
+                "Reason: ".to_string() + &error_description
+            } else {
+                String::new()
+            }
         };
-        let displayed_error = [where_, description, location].into_iter().filter(|string| !string.is_empty()).join("\n");
+        let causes = {
+            let causes = self.causes.iter().map(|cause| cause.to_display_string(force_no_colorize))
+                .filter(|cause| !cause.trim().is_empty())
+                .join("\n");
+            if !causes.trim().is_empty() {
+                "Causes:\n".to_string() + &causes
+            } else {
+                String::new()
+            }
+        };
+        let mut displayed_error = [where_, description, location, causes]
+            .into_iter()
+            .filter(|string| !string.is_empty())
+            .join("\n");
         displayed_error
     }
 }
@@ -100,8 +143,9 @@ impl<'input, AstError: ParsingErrorDetail> Display for ParsingError<'input, AstE
     }
 }
 
-impl<'input, AstError: ParsingErrorDetail> Error for ParsingError<'input, AstError> {}
+impl<'input, AstError: ParsingErrorDetail> std::error::Error for ParsingError<'input, AstError> {}
 
+#[derive(Default)]
 pub struct ErrorExplanation<'input> {
     explanation: String,
     complete_marker: Option<Colorization>,
@@ -230,20 +274,20 @@ impl Colorization {
 }
 
 
-trait ParsingErrorDetail: Debug + Sized {
+trait ParsingErrorDetail: Debug {
     fn explain_error(&self) -> ErrorExplanation;
 
-    fn location_str<'input>(self, where_: &'input str) -> ParsingError<'input, Self> {
+    fn location_str<'input>(self, where_: &'input str) -> ParsingError<'input, Self> where Self: Sized {
         ParsingError::new(self).location_str(where_)
     }
-    fn start_point_of_error<'input>(self, line: usize, column: usize) -> ParsingError<'input, Self> {
+    fn start_point_of_error<'input>(self, line: usize, column: usize) -> ParsingError<'input, Self> where Self: Sized {
         ParsingError::new(self).end_point_of_error(line, column)
     }
-    fn end_point_of_error<'input>(self, line: usize, column: usize) -> ParsingError<'input, Self> {
+    fn end_point_of_error<'input>(self, line: usize, column: usize) -> ParsingError<'input, Self> where Self: Sized {
         ParsingError::new(self).end_point_of_error(line, column)
     }
 
-    fn as_parsing_error<'input>(self) -> ParsingError<'input, Self> {
+    fn as_parsing_error<'input>(self) -> ParsingError<'input, Self> where Self: Sized {
         ParsingError::new(self)
     }
 }
@@ -257,7 +301,9 @@ impl<'input, T: ParsingErrorDetail> From<T> for ParsingError<'input, T> {
 
 #[derive(Debug)]
 enum ASTBuildingError<'input> {
-    VariableNotInScope { variable_name: &'input str }
+    VariableNotInScope { variable_name: &'input str },
+    CannotCompare { value_1: &'input str, comparator: &'input str, value_2: &'input str },
+    CannotParsePredicate { predicate: &'input str },
 }
 
 const MY_HIDDEN_BACKGROUND: Colorization = Colorization::new()
@@ -266,20 +312,39 @@ const MY_HIDDEN_BACKGROUND: Colorization = Colorization::new()
 impl<'input> ParsingErrorDetail for ASTBuildingError<'input> {
     fn explain_error(&self) -> ErrorExplanation {
         let explanation;
-        let color_markers;
+        let mut color_markers = Vec::new();
         match self {
             ASTBuildingError::VariableNotInScope { variable_name } => {
-
                 explanation = {
-                    let mut explanation = String::new();
-                    explanation.push_str("The variable ");
-                    explanation.push_str(&variable_name.bold());
-                    explanation.push_str(" does not exist");
-                    explanation
+                    "The variable ".to_string() + &variable_name.bold() + " does not exist"
                 };
                 color_markers = alloc::vec![
                     (*variable_name, Colorization::new()
                         .foreground(Color::Red)
+                        .styles([Styles::Clear, Styles::Italic, Styles::Bold])
+                    ),
+                ];
+            }
+            ASTBuildingError::CannotCompare { value_1, value_2, comparator } => {
+                explanation = {
+                    "Values ".to_string() + value_1 + " and " + value_2 + " cannot be compared due to different types (Comparator used " + &comparator.italic() + ")"
+                };
+                color_markers = alloc::vec![
+                    (*value_1, Colorization::new()
+                        .foreground(Color::Blue)
+                        .styles([Styles::Clear, Styles::Italic, Styles::Bold])
+                    ),
+                    (*value_2, Colorization::new()
+                        .foreground(Color::Red)
+                        .styles([Styles::Clear, Styles::Italic, Styles::Bold])
+                    ),
+                ];
+            }
+            ASTBuildingError::CannotParsePredicate { predicate } => {
+                explanation = "This if predicate (".to_string() + &predicate.italic().to_string() + ") doesn't returns a bool value";
+                color_markers = alloc::vec![
+                    (*predicate, Colorization::new()
+                        .foreground(Color::Blue)
                         .styles([Styles::Clear, Styles::Italic, Styles::Bold])
                     ),
                 ];
@@ -304,9 +369,20 @@ fn range_contains_other(range_1_start: usize, range_1_end: usize, range_2_start:
 fn main() {
     let input = "if a==1";
 
-    let error = ASTBuildingError::VariableNotInScope { variable_name: &input[3..4] }.location_str(&input);
+    let variable_not_in_scope_error = ASTBuildingError::VariableNotInScope { variable_name: &input[3..4] }.location_str(&input);
+    //println!("{variable_not_in_scope_error}");
+
+    let cannot_compare_error = ASTBuildingError::CannotCompare { value_1: &input[3..4], value_2: &input[6..7], comparator: &input[4..6] }.location_str(&input[3..7]);
+    //println!("{cannot_compare_error}");
+
+    let mut cannot_parse_predicate = ASTBuildingError::CannotParsePredicate { predicate: &input[3..7] }.location_str(&input);
+
+    cannot_parse_predicate.add_cause(cannot_compare_error.box_value());
+    cannot_parse_predicate.add_cause(variable_not_in_scope_error.box_value());
+    println!("{cannot_parse_predicate}");
+
+
     /*
-    println!("{error}");
     let _ = std::fs::write(r"D:\error.color", error.to_display_string(false));
 
 
@@ -325,7 +401,7 @@ fn main() {
     */
 }
 
-fn apply_substring_transformations<'input>(input: &'input str, mut input_modifiers: Vec<(&'input str, Colorization)>, general_colorization: Option<Colorization>) -> String {
+fn colorize<'input>(input: &'input str, mut input_modifiers: Vec<(&'input str, Colorization)>, general_colorization: Option<Colorization>) -> String {
     let (input_start, input_end) = mem_dir_of_string(input);
     let input_len = input.len();
     if let Some(general_colorization) = general_colorization {
