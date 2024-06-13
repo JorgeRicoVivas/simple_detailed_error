@@ -1,9 +1,17 @@
-use std::{fs, mem};
-use std::error::Error;
-use std::fmt::{Debug, Display, Formatter};
+#![no_std]
+
+extern crate alloc;
+
+use alloc::vec::Vec;
+use core::error::Error;
+use core::fmt::{Debug, Display, Formatter};
+use core::mem;
 
 use colored::{Color, ColoredString, Colorize, Styles};
 use itertools::Itertools;
+
+use crate::alloc::string::ToString;
+use alloc::string::String;
 
 #[derive(Debug)]
 struct ParsingError<'input, AstError: ParsingErrorDetail> {
@@ -39,31 +47,55 @@ impl<'input, AstError: ParsingErrorDetail> ParsingError<'input, AstError> {
         let ErrorExplanation { complete_marker: general_colorization, explanation: error_description, colorization_markers: contents_mapper } = self.ast_error.explain_error();
         if force_no_colorize { colored::control::unset_override() }
         let where_ = match self.where_ {
-            Some(where_) => if !force_no_colorize {
-                let where_ = apply_substring_transformations(where_, contents_mapper, general_colorization);
-                format!("On: {}", where_)
-            } else {
-                format!("On: {}", where_)
+            Some(where_) => {
+                let mut where_string = String::new();
+                where_string.push_str("On: ");
+                if !force_no_colorize {
+                    let where_ = apply_substring_transformations(where_, contents_mapper, general_colorization);
+                    where_string.push_str(&where_);
+                } else {
+                    where_string.push_str(where_);
+                }
+                where_string
             },
             _ => String::new()
         };
         let location = match (self.start_point_of_error, self.end_point_of_error) {
             (Some((line_of_start, column_of_start)), Some((line_of_end, column_of_end))) => {
-                format!("Where: From line {line_of_start} and column {column_of_start} to {line_of_end} and column {column_of_end}")
+                let mut location_string = String::new();
+                location_string.push_str("Where: From line ");
+                location_string.push_str(&line_of_start.to_string());
+                location_string.push_str(" and column ");
+                location_string.push_str(&column_of_start.to_string());
+                location_string.push_str(" to ");
+                location_string.push_str(&line_of_end.to_string());
+                location_string.push_str(" and column ");
+                location_string.push_str(&column_of_end.to_string());
+                location_string
             }
             (Some((line_of_start, column_of_start)), _) => {
-                format!("Where: On line {line_of_start} and column {column_of_start}")
+                let mut location_string = String::new();
+                location_string.push_str("Where: On line ");
+                location_string.push_str(&line_of_start.to_string());
+                location_string.push_str(" and column ");
+                location_string.push_str(&column_of_start.to_string());
+                location_string
             }
             _ => String::new()
         };
-        let description = format!("Reason: {error_description}");
+        let description = {
+            let mut description_string = String::new();
+            description_string.push_str("Reason: ");
+            description_string.push_str(&error_description);
+            description_string
+        };
         let displayed_error = [where_, description, location].into_iter().filter(|string| !string.is_empty()).join("\n");
         displayed_error
     }
 }
 
 impl<'input, AstError: ParsingErrorDetail> Display for ParsingError<'input, AstError> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_str(&self.to_display_string(false))
     }
 }
@@ -237,8 +269,15 @@ impl<'input> ParsingErrorDetail for ASTBuildingError<'input> {
         let color_markers;
         match self {
             ASTBuildingError::VariableNotInScope { variable_name } => {
-                explanation = format!("The variable {} does not exist", variable_name.bold());
-                color_markers = vec![
+
+                explanation = {
+                    let mut explanation = String::new();
+                    explanation.push_str("The variable ");
+                    explanation.push_str(&variable_name.bold());
+                    explanation.push_str(" does not exist");
+                    explanation
+                };
+                color_markers = alloc::vec![
                     (*variable_name, Colorization::new()
                         .foreground(Color::Red)
                         .styles([Styles::Clear, Styles::Italic, Styles::Bold])
@@ -263,13 +302,12 @@ fn range_contains_other(range_1_start: usize, range_1_end: usize, range_2_start:
 }
 
 fn main() {
-
     let input = "if a==1";
 
     let error = ASTBuildingError::VariableNotInScope { variable_name: &input[3..4] }.location_str(&input);
+    /*
     println!("{error}");
-    let _ = fs::write(r"D:\error.color", error.to_display_string(false));
-
+    let _ = std::fs::write(r"D:\error.color", error.to_display_string(false));
 
 
     let input_mo = vec![
@@ -284,6 +322,7 @@ fn main() {
 
     let input = apply_substring_transformations(input, input_mo, None);
     println!("{input}");
+    */
 }
 
 fn apply_substring_transformations<'input>(input: &'input str, mut input_modifiers: Vec<(&'input str, Colorization)>, general_colorization: Option<Colorization>) -> String {
@@ -359,7 +398,11 @@ fn apply_substring_transformations<'input>(input: &'input str, mut input_modifie
                 };
                 modified = stylizer(ColoredString::from(modified)).to_string().to_string();
             }
-            input = format!("{}{}{}", &input[..start], modified, &input[offset_end..]);
+            let mut res = String::new();
+            res.push_str(&input[..start]);
+            res.push_str(&modified);
+            res.push_str(&input[offset_end..]);
+            input = res;
         });
     input
 }
