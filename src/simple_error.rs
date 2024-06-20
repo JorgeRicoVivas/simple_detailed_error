@@ -105,10 +105,9 @@ impl<'input> SimpleError<'input> {
     }
 
     fn __as_display_struct(&self) -> SimpleErrorDisplayInfo {
-        let error_explanation = match &self.error_detail{
-            Some(error_detail) => error_detail.explain_error(),
-            None => Default::default(),
-        };
+        let error_explanation =  self.error_detail.as_ref()
+            .map(|error_detail|error_detail.explain_error())
+            .unwrap_or_default();
 
         #[cfg(feature = "colorization")]
         let SimpleErrorExplanation { whole_marker: general_colorizer, explanation: error_description, solution, colorization_markers: substring_colorizers } = error_explanation;
