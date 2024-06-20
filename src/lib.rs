@@ -24,17 +24,17 @@
 //! \- Error: Couldn't compile code.<br>
 //! \- Has: 2 explained causes.<br>
 //! \- Causes:<br>
-//! <span style="visibility: hidden;">aaaa</span>- Cause nº 1 -<br>
-//! <span style="visibility: hidden;">aaaa</span>\- At: if missing_variable > 0<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Error: Variable missing_variable doesn't exists.<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-//! <span style="visibility: hidden;">aaaaaaaaaaaaa</span> let missing_variable = your value<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 1 -<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- At: if missing_variable > 0<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Error: Variable missing_variable doesn't exists.<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Solution: Declare it before using it, like this:<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; let missing_variable = your value<br>
 //!  <br>
-//! <span style="visibility: hidden;">aaaa</span>- Cause nº 2 -<br>
-//! <span style="visibility: hidden;">aaaa</span>\- At: return missing_function(missing_variable);<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Error: Function missing_function doesn't exists.<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Solution: Implement an missing_function function, like this:<br>
-//! <span style="visibility: hidden;">aaaaaaaaaaaaa</span> fn missing_function(...) { ...your code here... }<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 2 -<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- At: return missing_function(missing_variable);<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Error: Function missing_function doesn't exists.<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Solution: Implement an missing_function function, like this:<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fn missing_function(...) { ...your code here... }<br>
 //!
 //! <br>
 //!
@@ -179,17 +179,17 @@
 //! \- Error: Couldn't compile code.<br>
 //! \- Has: 2 explained causes.<br>
 //! \- Causes:<br>
-//! <span style="visibility: hidden;">aaaa</span>- Cause nº 1 -<br>
-//! <span style="visibility: hidden;">aaaa</span>\- At: <i style="color:lightblue;opacity:.7;">if </i>**<span style="color: red;">missing_variable </span>** <i style="color:lightblue;opacity:.7;">> 0</i><br>
-//! <span style="visibility: hidden;">aaaa</span>\- Error: Variable **missing_variable** doesn't exists.<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-//! <span style="visibility: hidden;">aaaaaaaaaaaaa</span>              let <span style="color:green">missing_variable</span> = <i>*your value*</i><br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 1 -<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;</span>\- At: <i style="color:lightblue;opacity:.7;">if </i><span style="color: red;">**missing_variable**</span> <i style="color:lightblue;opacity:.7;">> 0</i><br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Error: Variable **missing_variable** doesn't exists.<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Solution: Declare it before using it, like this:<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; let <span style="color:green">missing_variable = <i>*your value*</i><br>
 //!  <br>
-//! <span style="visibility: hidden;">aaaa</span>- Cause nº 2 -<br>
-//! <span style="visibility: hidden;">aaaa</span>\- At: <i style="color:lightblue;opacity:.7;">return </i>**<span style="color: red;">missing_function</span>**<i style="color:lightblue;opacity:.7;">(missing_variable);</i><br>
-//! <span style="visibility: hidden;">aaaa</span>\- Error: Function **missing_function** doesn't exists.<br>
-//! <span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-//! <span style="visibility: hidden;">aaaaaaaaaaaaa</span>              fn <span style="color:green">missing_function</span> (...) { ...*your code here*... }<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 2 -<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;</span>\- At: <i style="color:lightblue;opacity:.7;">return </i>**<span style="color: red;">missing_function**<i style="color:lightblue;opacity:.7;">(missing_variable);</i><br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Error: Function **missing_function** doesn't exists.<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;\- Solution: Declare it before using it, like this:<br>
+//! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fn <span style="color:green">missing_function (...) { ...*your code here*... }<br>
 //!
 //! By dimming irrelevant parts and making the parts where the errors happen to be easier to see
 //! might direct the attention of the user to the error, this makes them to read less in plenty of
@@ -331,7 +331,6 @@
 //! storing logs of errors, especially for auditing.
 //!
 //! Currently, the ``std`` and ``colorization`` are enabled by default.
-//!
 
 extern crate alloc;
 

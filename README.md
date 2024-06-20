@@ -4,36 +4,38 @@
 [![GitHub License](https://img.shields.io/github/license/JorgeRicoVivas/simple_detailed_error)](https://github.com/JorgeRicoVivas/simple_detailed_error?tab=CC0-1.0-1-ov-file)
 > *You are reading the documentation for simple_detailed_error version 1.0.0*
 
-This crate helps you creating errors by giving you the SimpleErrorDetail trait where you give text indicating why a
-error happens and how to solve it, while still using a pattern that easily allows you to tell the user information about
-said error, such as what happened, why, how, where, how to solve it and its causes.
+This crate helps you creating errors by giving you the [SimpleErrorDetail] trait where you give
+text indicating why an error happens and how to solve it, while still using a pattern that
+easily allows you to tell the user information about said error, such as what happened, why,
+how, where, how to solve it and its causes.
 <br>
 
-<h1>Guided and deep example of use</h1>
+# Guided and deep example with parsing errors of a scripting language
 
-Say we are creating a scripting language inside rust where we receive some code like
-```if missing_variable > 0 { return missing_function(missing_variable); }```, this code has two
-errors: The variable ***missing_variable*** doesn't exists, and the function
+Say we are creating a scripting language inside rust where we receive a script like
+```if missing_variable > 0 { return missing_function(missing_variable); }```, this script has
+two errors: The variable ***missing_variable*** doesn't exists, and the function
 ***missing_function*** doesn't exist either, in this situation, we would like to show the user
 an error message like this: <br>
 
-\- Error: Couldn't compile code.<br>
-\- Has: 2 explained causes.<br>
-\- Causes:<br>
-<span style="visibility: hidden;">aaaa</span>- Cause nº 1 -<br>
-<span style="visibility: hidden;">aaaa</span>\- At: if missing_variable > 0<br>
-<span style="visibility: hidden;">aaaa</span>\- Error: Variable missing_variable doesn't exists.<br>
-<span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-<span style="visibility: hidden;">aaaaaaaaaaaaa</span> let missing_variable = your value<br>
+<span/>- Error: Couldn't compile code.<br>
+<span/>- Has: 2 explained causes.<br>
+<span/>- Causes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 1 -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- At: if missing_variable > 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Error: Variable missing_variable doesn't exists.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Solution: Declare it before using it, like this:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; let missing_variable = your value<br>
  <br>
-<span style="visibility: hidden;">aaaa</span>- Cause nº 2 -<br>
-<span style="visibility: hidden;">aaaa</span>\- At: return missing_function(missing_variable);<br>
-<span style="visibility: hidden;">aaaa</span>\- Error: Function missing_function doesn't exists.<br>
-<span style="visibility: hidden;">aaaa</span>\- Solution: Implement an missing_function function, like this:<br>
-<span style="visibility: hidden;">aaaaaaaaaaaaa</span> fn missing_function(...) { ...your code here... }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 2 -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- At: return missing_function(missing_variable);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Error: Function missing_function doesn't exists.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Solution: Implement an missing_function function, like this:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fn missing_function(...) { ...your code here... }<br>
 
 <br>
-<h3>Defining structs that explain errors</h3>
+
+### Defining structs that explain errors
 
 For now, let's declare an enum that would represent all the errors we want (They can be
 different structs, but to make it comfortable, we are going to use three variants), for example:
@@ -42,21 +44,19 @@ different structs, but to make it comfortable, we are going to use three variant
 #[derive(Debug)]
 enum CompilationError<'code_input>{
     MissingVariable { variable_name : &'code_input str }, // This represents when a non-existing
-                                                          // variable is referenced.
+                                                          // variable is referenced
     MissingFunction { function_name : &'code_input str }, // This represents when a non-declared
-                                                          // function tries to get called.
+                                                          // function tries to get called
     RootCompilationError // This isn't really an error, is just one representation for saying
-                         // 'hey, there are errors in your compilation', but you'll likely never
-                         // create a variant like this in production.
+                         // 'hey, there are errors in your compilation'
 }
 ```
 
-Now lets just implement SimpleErrorDetail on this enum, this makes it so we have to implement
-a function where we return a SimpleErrorExplanation, this is, an error on why the error is
-happening, where we can give an explanation and a solution for the error using the functions
-SimpleErrorExplanation::solution and SimpleErrorExplanation::explanation (Note: You are not
-forced to give neither the solution nor the explanation, but is highly advised, as they
-should help your users):
+Now let's just implement [SimpleErrorDetail] on this enum, this makes it so we have to implement
+a function where we return a [SimpleErrorExplanation] where we can give an explanation and a
+solution for the error using the functions [SimpleErrorExplanation::solution] and
+[SimpleErrorExplanation::explanation] (Note: You are not forced to give neither the solution nor
+the explanation, but is is highly advised, as they should help your users):
 
 ``` rust
 use simple_detailed_error::{SimpleErrorExplanation, SimpleErrorDetail};
@@ -90,17 +90,18 @@ enum CompilationError<'code_input>{
 ```
 
 <br>
-<h3>Creating error values and displaying them</h3>
+
+### Creating error values and displaying them
 
 Perfect! With this, our enum representing our errors now can use functions like
-SimpleErrorDetail::to_parsing_error, which turns our variant into a struct of SimpleError
+[SimpleErrorDetail::to_parsing_error], which turns our variant into a struct of [SimpleError]
 containing said variant and using is as a representation of an error whose explanation and
-solutions are those said when we implemented SimpleErrorDetail::explain_error.
+solutions are those said when we implemented [SimpleErrorDetail::explain_error].
 
-The SimpleError struct is one that holds information about an error, such as why it happened,
-how to solve it, or where it happened, it can also hold other SimpleErrors inside, this
+The [SimpleError] struct is one that holds information about an error, such as why it happened,
+how to solve it, or where it happened, it can also hold other [SimpleError]s inside, this
 represents an error being caused by another error, or even by multiple errors, for example, we
-can add an error using SimpleError::add_cause or SimpleError::with_cause.
+can add an error using [SimpleError::add_cause] or [SimpleError::with_cause].
 
 For now, we are going to create a variant of `CompilationError::RootCompilationError` which will
 hold our errors, and then we are going to stack it with the missing variable and the missing
@@ -109,22 +110,22 @@ function errors:
 - Creating the <i>missing variable error</i>: This is simply constructing a
 `CompilationError::MissingVariable` variant, where the variable name is just a reference to where
 it says 'missing_variable' in the original input, and since this is a parsing error, we can also
-use the SimpleError::at to indicate a bigger string where the error is happening, we will use
+use the [SimpleError::at] to indicate a bigger string where the error is happening, we will use
 it to reference 'if missing_variable > 0'.<br><br>
-...Wait, we are using the `at` function, but that's implemented for SimpleError, why is it
-working then? Well, the trait SimpleErrorDetail implements plenty of functions of
-SimpleError, this is so you can use your struct (In this case `CompilationError`) as you were
-using a value of type SimpleError.<br><br>
+...Wait, we are using the `at` function, but that's implemented for [SimpleError], why is it
+working then? Well, the trait [SimpleErrorDetail] implements plenty of functions of
+[SimpleError], this is so you can use your struct (In this case `CompilationError`) as you were
+using a value of type [SimpleError].<br><br>
 - Creating the <i>missing function error</i>: This isn't very different from our previous case,
 we just constructing a `CompilationError::MissingFunction`, as for the function `at`, this time
-we will reference 'return missing_function(missing_variable);'.
+we will reference 'return missing_function(missing_variable);'.<br><br>
 - Creating the <i>Error root</i>: This is something you'll perhaps never do in a real project,
 but we are going to use a base error, in this case  `CompilationError::RootCompilationError`
-where we will stack the errors using the SimpleError::with_cause function, stacking the
+where we will stack the errors using the [SimpleError::with_cause] function, stacking the
 missing variable and missing function errors, although this is just for showing it's
 functionality, you should just stack real causes.
 
-Once done, we can just can print our SimpleError and it will result in the error stack shown
+Once done, we can just can print our [SimpleError] and it will result in the error stack shown
 earlier.
 
 ``` rust
@@ -167,32 +168,31 @@ enum CompilationError<'code_input>{
 }
 ```
 
-<br>
-<h3>Extra: Adding color and emphasis</h3>
+### Feature 'colorization': Adding color and emphasis on errors
 
 That was quite alright! But... the output could benefit from some colorization, what if the
 result looked more like this?
 
-\- Error: Couldn't compile code.<br>
-\- Has: 2 explained causes.<br>
-\- Causes:<br>
-<span style="visibility: hidden;">aaaa</span>- Cause nº 1 -<br>
-<span style="visibility: hidden;">aaaa</span>\- At: <i style="color:lightblue;opacity:.7;">if </i>**<span style="color: red;">missing_variable </span>** <i style="color:lightblue;opacity:.7;">> 0</i><br>
-<span style="visibility: hidden;">aaaa</span>\- Error: Variable **missing_variable** doesn't exists.<br>
-<span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-<span style="visibility: hidden;">aaaaaaaaaaaaa</span>              let <span style="color:green">missing_variable</span> = <i>*your value*</i><br>
+<span/>- Error: Couldn't compile code.<br>
+<span/>- Has: 2 explained causes.<br>
+<span/>- Causes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 1 -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>- At: <i style="color:lightblue;opacity:.7;">if </i><span style="color: red;">**missing_variable**</span> <i style="color:lightblue;opacity:.7;">> 0</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Error: Variable **missing_variable** doesn't exists.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Solution: Declare it before using it, like this:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; let <span style="color:green">missing_variable = <i>*your value*</i><br>
  <br>
-<span style="visibility: hidden;">aaaa</span>- Cause nº 2 -<br>
-<span style="visibility: hidden;">aaaa</span>\- At: <i style="color:lightblue;opacity:.7;">return </i>**<span style="color: red;">missing_function</span>**<i style="color:lightblue;opacity:.7;">(missing_variable);</i><br>
-<span style="visibility: hidden;">aaaa</span>\- Error: Function **missing_function** doesn't exists.<br>
-<span style="visibility: hidden;">aaaa</span>\- Solution: Declare it before using it, like this:<br>
-<span style="visibility: hidden;">aaaaaaaaaaaaa</span>              fn <span style="color:green">missing_function</span> (...) { ...*your code here*... }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Cause nº 2 -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>- At: <i style="color:lightblue;opacity:.7;">return </i>**<span style="color: red;">missing_function**<i style="color:lightblue;opacity:.7;">(missing_variable);</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Error: Function **missing_function** doesn't exists.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- Solution: Declare it before using it, like this:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fn <span style="color:green">missing_function (...) { ...*your code here*... }<br>
 
 By dimming irrelevant parts and making the parts where the errors happen to be easier to see
 might direct the attention of the user to the error, this makes them to read less in plenty of
 times while they still all the relevant information.
 
-- Colorizing explanations and solutions: With the colored crate you can colorize the
+- Colorizing explanations and solutions: With the [colored] crate you can colorize the
 explanations and solutions, for example, in `Variable {variable_name} doesn't exist` it would
 be great if we could turn the variable name into a bold and red name, taking the user's
 attention directly to it, like 'Variable <span style="color:red">**missing variable**</span>
@@ -200,19 +200,19 @@ doesn't exist'.<br><br>
 For this, we can just replace
 `.explanation(format!("Variable {variable_name} doesn't exists."))` for
 `.explanation(format!("Variable {} doesn't exists.", variable_name.red().bold()))`.<br><br>
-- Colorizing the input: The string_colorization::colorize takes an &str and then applies some
+- Colorizing the input: The [string_colorization::colorize] takes an &str and then applies some
 colors and stylizations to other &str of it that we tell, this means that if we had a &str that
 is part of the &str taken as input, then we could colorize it!<br>
-For example, in out missing variable error, we used SimpleError::at, where the substring
+For example, in out missing variable error, we used [SimpleError::at], where the substring
 referenced is 'if missing_variable > 0', thing is, our missing variable variant has another
 substring whose value is 'missing_variable', this means that if we used
-SimpleErrorExplanation::colorization_marker like this `SimpleErrorExplanation::new()
+[SimpleErrorExplanation::colorization_marker] like this `SimpleErrorExplanation::new()
 .colorization_marker(variable_name, foreground::Red + style::Bold)`, then 'if missing_variable >
 0' would look like 'if <span style="color:red">**missing_variable**</span> > 0'.<br><br>
 The down-side of this is that your struct or enum must have references to the original source,
 although this is often the case for many situations, like parsing values as in this situation.
 <br><br>
-We can also use SimpleErrorExplanation::whole_input_colorization to colorize everything
+We can also use [SimpleErrorExplanation::whole_input_colorization] to colorize everything
 written inside `at`, for example, `SimpleErrorExplanation::new()
 .complete_input_colorization(foreground::Blue + style::Italic + style::Dimmed)` will make it so
 `if missing_variable > 0` looks blue, italic and dimmed, telling the user it is not important.
@@ -221,7 +221,7 @@ if **<span style="color: red;">missing_variable </span>** > 0</i>, not like
 <i style="color:lightblue;opacity:.7;">if </i>**<span style="color: red;">missing_variable
 </span>** <i style="color:lightblue;opacity:.7;">> 0</i>, why is 'missing_variable' also dimmed?
 This is because the complete_input_colorization set it to dim, while the colorization_marker
-didn't override this, to avoid this, we can use string_colorization::style::Clear to remove
+didn't override this, to avoid this, we can use [string_colorization::style::Clear] to remove
 all the stylization from complete_input_colorization, this makes it so
 `SimpleErrorExplanation::new() .colorization_marker(variable_name, foreground::Red +
 style::Bold) .complete_input_colorization(style::Clear + foreground::Blue + style::Italic +
@@ -317,3 +317,14 @@ enum CompilationError<'code_input>{
     RootCompilationError
 }
 ```
+
+# Features
+
+- ``std``: Implements the Error trait for SimpleError, it might also be used for future
+implementations that might require targeting std.
+- ``colorization``: Allows the colorization markers functions to be used on SimpleErrorExplanation,
+helping you to create beautiful colored error message to direct your user's attention.
+- ``serde``: Implements Serialize and Deserialize on SimpleErrorDisplayInfo, this is useful for
+storing logs of errors, especially for auditing.
+
+Currently, the ``std`` and ``colorization`` are enabled by default.
