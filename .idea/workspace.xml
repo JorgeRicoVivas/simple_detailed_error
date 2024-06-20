@@ -7,10 +7,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Added documentation on every item.">
+    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Corrected spans colors.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +138,7 @@
       <option name="presentableId" value="Default" />
       <updated>1718636329841</updated>
       <workItem from="1718636332244" duration="5417000" />
-      <workItem from="1718907144855" duration="7073000" />
+      <workItem from="1718907144855" duration="7865000" />
     </task>
     <task id="LOCAL-00001" summary="Added documentation on every item.">
       <option name="closed" value="true" />
@@ -150,7 +148,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718917565018</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Corrected spans colors.">
+      <option name="closed" value="true" />
+      <created>1718918564191</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718918564191</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -158,6 +164,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added documentation on every item." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added documentation on every item." />
+    <MESSAGE value="Corrected spans colors." />
+    <option name="LAST_COMMIT_MESSAGE" value="Corrected spans colors." />
   </component>
 </project>

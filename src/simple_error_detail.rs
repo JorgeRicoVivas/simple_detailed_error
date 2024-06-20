@@ -20,7 +20,7 @@ pub trait SimpleErrorDetail: Debug {
     /// Turns this error value into a [SimpleError] containing both the error itself and the
     /// location it happened at on a certain string, this is specially useful when your error
     /// represents a parsing error.
-    fn at(self, where_: &str) -> SimpleError where Self: Sized + 'static {
+    fn at<'input>(self, where_: &'input str) -> SimpleError<'input> where Self: Sized + 'static {
         SimpleError::new().error_detail(self).at(where_)
     }
 
