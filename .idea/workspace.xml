@@ -7,7 +7,11 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Relaxed lifetime of SimpleError" />
+    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Relaxed lifetime of SimpleError">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple_error_detail.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple_error_detail.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple_error_explanation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple_error_explanation.rs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,26 +32,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Cargo.Doctest of simple_detailed_error (line 10).executor": "Run",
-    "Cargo.Doctest of simple_detailed_error (line 274).executor": "Run",
-    "Cargo.Doctest of simple_detailed_error (line 51).executor": "Run",
-    "Cargo.Test simple_detailed_error.executor": "Run",
-    "Cargo.Test test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Doctest of simple_detailed_error (line 10).executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Doctest of simple_detailed_error (line 274).executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Doctest of simple_detailed_error (line 51).executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test simple_detailed_error.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Cargo.Test test">
     <configuration name="Doctest of simple_detailed_error (line 10)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="command" value="test --package simple_detailed_error --doc &quot;(line\ 10)&quot;" />
@@ -156,6 +160,7 @@
       <updated>1718636329841</updated>
       <workItem from="1718636332244" duration="5417000" />
       <workItem from="1718907144855" duration="10199000" />
+      <workItem from="1718923759643" duration="406000" />
     </task>
     <task id="LOCAL-00001" summary="Added documentation on every item.">
       <option name="closed" value="true" />
@@ -213,7 +218,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718921502157</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Relaxed lifetime of SimpleError">
+      <option name="closed" value="true" />
+      <created>1718924173675</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1718924173675</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
