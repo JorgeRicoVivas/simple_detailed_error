@@ -38,7 +38,7 @@ pub trait SimpleErrorDetail: Debug {
     }
 
     /// Turns this error value into a [SimpleError] the error itself
-    fn to_parsing_error<'input>(self) -> SimpleError<'input> where Self: Sized + 'input {
+    fn to_simple_error<'input>(self) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self)
     }
 

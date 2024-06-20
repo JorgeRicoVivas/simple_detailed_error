@@ -97,7 +97,7 @@
 //! ### Creating error values and displaying them
 //!
 //! Perfect! With this, our enum representing our errors now can use functions like
-//! [SimpleErrorDetail::to_parsing_error], which turns our variant into a struct of [SimpleError]
+//! [SimpleErrorDetail::to_simple_error], which turns our variant into a struct of [SimpleError]
 //! containing said variant and using is as a representation of an error whose explanation and
 //! solutions are those said when we implemented [SimpleErrorDetail::explain_error].
 //!
