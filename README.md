@@ -223,8 +223,8 @@ if **<span style="color: red;">missing_variable </span>** > 0</i>, not like
 This is because the complete_input_colorization set it to dim, while the colorization_marker
 didn't override this, to avoid this, we can use [string_colorization::style::Clear] to remove
 all the stylization from complete_input_colorization, this makes it so
-`SimpleErrorExplanation::new() .colorization_marker(variable_name, foreground::Red +
-style::Bold) .complete_input_colorization(style::Clear + foreground::Blue + style::Italic +
+`SimpleErrorExplanation::new() .colorization_marker(variable_name, style::Clear + 
+foreground::Red + style::Bold) .complete_input_colorization(foreground::Blue + style::Italic +
 style::Dimmed)` while turn 'if missing_variable > 0' into the desired
 <i style="color:lightblue;opacity:.7;">if </i>**<span style="color: red;">missing_variable
 </span>** <i style="color:lightblue;opacity:.7;">> 0</i>.
@@ -239,15 +239,15 @@ impl <'code_input> SimpleErrorDetail for CompilationError<'code_input>{
         match self{
             CompilationError::MissingVariable{ variable_name } => {
                 SimpleErrorExplanation::new()
-                    .colorization_marker(variable_name, foreground::Red + style::Bold)
-                    .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+                    .colorization_marker(variable_name, style::Clear + foreground::Red + style::Bold)
+                    .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
                     .explanation(format!("Variable {} doesn't exists.", variable_name.red().bold()))
                     .solution(format!("Declare it before using it, like this:\nlet {} = {}", variable_name.green(), "*your value*".italic()))
             }
             CompilationError::MissingFunction{ function_name } => {
                 SimpleErrorExplanation::new()
-                    .colorization_marker(function_name, foreground::Red + style::Bold)
-                    .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+                    .colorization_marker(function_name, style::Clear + foreground::Red + style::Bold)
+                    .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
                     .explanation(format!("Function {} doesn't exists.", function_name.red().bold()))
                     .solution(format!("Implement an {function_name} function, like this:\nfn {}(...) {{ ...{}... }}", function_name.green(), "*your code here*".italic() ))
             }
@@ -291,15 +291,15 @@ impl <'code_input> SimpleErrorDetail for CompilationError<'code_input>{
         match self{
             CompilationError::MissingVariable{ variable_name } => {
                 SimpleErrorExplanation::new()
-                    .colorization_marker(variable_name, foreground::Red + style::Bold)
-                    .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+                    .colorization_marker(variable_name, style::Clear + foreground::Red + style::Bold)
+                    .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
                     .explanation(format!("Variable {} doesn't exists.", variable_name.red().bold()))
                     .solution(format!("Declare it before using it, like this:\nlet {} = {}", variable_name.green(), "*your value*".italic()))
             }
             CompilationError::MissingFunction{ function_name } => {
                 SimpleErrorExplanation::new()
-                    .colorization_marker(function_name, foreground::Red + style::Bold)
-                    .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+                    .colorization_marker(function_name, style::Clear + foreground::Red + style::Bold)
+                    .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
                     .explanation(format!("Function {} doesn't exists.", function_name.red().bold()))
                     .solution(format!("Implement an {function_name} function, like this:\nfn {}(...) {{ ...{}... }}", function_name.green(), "*your code here*".italic() ))
             }

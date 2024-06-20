@@ -226,8 +226,8 @@
 //! This is because the complete_input_colorization set it to dim, while the colorization_marker
 //! didn't override this, to avoid this, we can use [string_colorization::style::Clear] to remove
 //! all the stylization from complete_input_colorization, this makes it so
-//! `SimpleErrorExplanation::new() .colorization_marker(variable_name, foreground::Red +
-//! style::Bold) .complete_input_colorization(style::Clear + foreground::Blue + style::Italic +
+//! `SimpleErrorExplanation::new() .colorization_marker(variable_name, style::Clear +
+//! foreground::Red + style::Bold) .complete_input_colorization(foreground::Blue + style::Italic +
 //! style::Dimmed)` while turn 'if missing_variable > 0' into the desired
 //! <i style="color:lightblue;opacity:.7;">if </i>**<span style="color: red;">missing_variable
 //! </span>** <i style="color:lightblue;opacity:.7;">> 0</i>.
@@ -242,15 +242,15 @@
 //!         match self{
 //!             CompilationError::MissingVariable{ variable_name } => {
 //!                 SimpleErrorExplanation::new()
-//!                     .colorization_marker(variable_name, foreground::Red + style::Bold)
-//!                     .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+//!                     .colorization_marker(variable_name, style::Clear + foreground::Red + style::Bold)
+//!                     .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
 //!                     .explanation(format!("Variable {} doesn't exists.", variable_name.red().bold()))
 //!                     .solution(format!("Declare it before using it, like this:\nlet {} = {}", variable_name.green(), "*your value*".italic()))
 //!             }
 //!             CompilationError::MissingFunction{ function_name } => {
 //!                 SimpleErrorExplanation::new()
-//!                     .colorization_marker(function_name, foreground::Red + style::Bold)
-//!                     .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+//!                     .colorization_marker(function_name, style::Clear + foreground::Red + style::Bold)
+//!                     .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
 //!                     .explanation(format!("Function {} doesn't exists.", function_name.red().bold()))
 //!                     .solution(format!("Implement an {function_name} function, like this:\nfn {}(...) {{ ...{}... }}", function_name.green(), "*your code here*".italic() ))
 //!             }
@@ -287,22 +287,22 @@
 //!                                  .at(&code_to_compile[26..68]);
 //! let errors_stacker = CompilationError::RootCompilationError
 //!                         .with_cause(missing_variable_error).with_cause(missing_function_error);
-//! assert_eq!(format!("{errors_stacker}"), "Error: Couldn't compile code.\nHas: 2 explained causes.\nCauses: \n  - Cause nº 1 -\n  - At: \u{1b}[34m\u{1b}[3m\u{1b}[2mif \u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[2m\u{1b}[1mmissing_variable\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[2m\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[0m\u{1b}[31m\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[2m > 0\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\n  - Error: Variable \u{1b}[1;31mmissing_variable\u{1b}[0m doesn't exists.\n  - Solution: Declare it before using it, like this:\n              let \u{1b}[32mmissing_variable\u{1b}[0m = \u{1b}[3m*your value*\u{1b}[0m\n  \n  - Cause nº 2 -\n  - At: \u{1b}[34m\u{1b}[3m\u{1b}[2mreturn \u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[2m\u{1b}[1mmissing_function\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[2m\u{1b}[0m\u{1b}[31m\u{1b}[3m\u{1b}[0m\u{1b}[31m\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[2m(missing_variable);\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\n  - Error: Function \u{1b}[1;31mmissing_function\u{1b}[0m doesn't exists.\n  - Solution: Implement an missing_function function, like this:\n              fn \u{1b}[32mmissing_function\u{1b}[0m(...) { ...\u{1b}[3m*your code here*\u{1b}[0m... }");
+//! assert_eq!(format!("{errors_stacker}"), "Error: Couldn't compile code.\nHas: 2 explained causes.\nCauses: \n  - Cause nº 1 -\n  - At: \u{1b}[34m\u{1b}[3m\u{1b}[2mif \u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\u{1b}[31m\u{1b}[1mmissing_variable\u{1b}[0m\u{1b}[31m\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[2m > 0\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\n  - Error: Variable \u{1b}[1;31mmissing_variable\u{1b}[0m doesn't exists.\n  - Solution: Declare it before using it, like this:\n              let \u{1b}[32mmissing_variable\u{1b}[0m = \u{1b}[3m*your value*\u{1b}[0m\n  \n  - Cause nº 2 -\n  - At: \u{1b}[34m\u{1b}[3m\u{1b}[2mreturn \u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\u{1b}[31m\u{1b}[1mmissing_function\u{1b}[0m\u{1b}[31m\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[2m(missing_variable);\u{1b}[0m\u{1b}[34m\u{1b}[3m\u{1b}[0m\u{1b}[34m\u{1b}[0m\n  - Error: Function \u{1b}[1;31mmissing_function\u{1b}[0m doesn't exists.\n  - Solution: Implement an missing_function function, like this:\n              fn \u{1b}[32mmissing_function\u{1b}[0m(...) { ...\u{1b}[3m*your code here*\u{1b}[0m... }");
 //!
 //! impl <'code_input> SimpleErrorDetail for CompilationError<'code_input>{
 //!     fn explain_error(&self) -> SimpleErrorExplanation {
 //!         match self{
 //!             CompilationError::MissingVariable{ variable_name } => {
 //!                 SimpleErrorExplanation::new()
-//!                     .colorization_marker(variable_name, foreground::Red + style::Bold)
-//!                     .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+//!                     .colorization_marker(variable_name, style::Clear + foreground::Red + style::Bold)
+//!                     .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
 //!                     .explanation(format!("Variable {} doesn't exists.", variable_name.red().bold()))
 //!                     .solution(format!("Declare it before using it, like this:\nlet {} = {}", variable_name.green(), "*your value*".italic()))
 //!             }
 //!             CompilationError::MissingFunction{ function_name } => {
 //!                 SimpleErrorExplanation::new()
-//!                     .colorization_marker(function_name, foreground::Red + style::Bold)
-//!                     .whole_input_colorization(style::Clear + foreground::Blue + style::Italic + style::Dimmed)
+//!                     .colorization_marker(function_name, style::Clear + foreground::Red + style::Bold)
+//!                     .whole_input_colorization(foreground::Blue + style::Italic + style::Dimmed)
 //!                     .explanation(format!("Function {} doesn't exists.", function_name.red().bold()))
 //!                     .solution(format!("Implement an {function_name} function, like this:\nfn {}(...) {{ ...{}... }}", function_name.green(), "*your code here*".italic() ))
 //!             }
