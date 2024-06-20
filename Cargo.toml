@@ -1,10 +1,33 @@
 [package]
-name = "parsing_error"
+name = "simple_detailed_error"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>", "Jorge Rico Vivas <jorgericoinformatic@gmail.com>"]
+description = "Stack and specify errors explainations saying what happened, why, how, where, how to solve it and its causes"
+repository = "https://github.com/JorgeRicoVivas/simple_detailed_error"
+keywords = ["error", "detail", "detailed-error", "simple-error", "backtrace"]
+categories = ["rust-patterns", "no-std", "parsing", "visualization"]
+license-file = "LICENSE.txt"
+readme = "README.md"
 
+[lib]
 
 [dependencies]
-colored = "2.1.0"
-itertools = "0.12.1"
+string_colorization = { version = "1.0.0", optional = true }
+colored = { version = "2.1.0", optional = true }
+serde = { version = "1.0.203", features = ["derive"], optional = true }
 
+[features]
+default = ["std", "colorization"]
+## Implements the Error trait for SimpleError, it might also be used for future implementations that might require targeting std.
+std = []
+## Allows the colorization markers to used on SimpleErrorExplanation, helping you to create beautiful colored error message to direct your user's attention.
+colorization = ["dep:string_colorization", "dep:colored"]
+## Implements Serialize and Deserialize on SimpleErrorDisplayInfo, this is useful for storing logs of errors, especially for auditing.
+serde = ["dep:serde"]
+
+[dev-dependencies]
+itertools = "0.13.0"
+
+[package.metadata.docs.rs]
+all-features = true
