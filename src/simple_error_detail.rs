@@ -20,45 +20,45 @@ pub trait SimpleErrorDetail: Debug {
     /// Turns this error value into a [SimpleError] containing both the error itself and the
     /// location it happened at on a certain string, this is specially useful when your error
     /// represents a parsing error.
-    fn at<'input>(self, where_: &'input str) -> SimpleError<'input> where Self: Sized + 'static {
+    fn at<'input>(self, where_: &'input str) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self).at(where_)
     }
 
     /// Turns this error value into a [SimpleError] containing both the error itself and start line
     /// and column this error happened, this is specially useful when your error represents a
     /// parsing error.
-    fn start_point_of_error<'input>(self, line: usize, column: usize) -> SimpleError<'input> where Self: Sized + 'static {
+    fn start_point_of_error<'input>(self, line: usize, column: usize) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self).end_point_of_error(line, column)
     }
 
     /// Turns this error value into a [SimpleError] containing both the error itself and the line
     /// and column where this error finishes from happening, this is specially useful when your
     /// error represents a parsing error.
-    fn end_point_of_error<'input>(self, line: usize, column: usize) -> SimpleError<'input> where Self: Sized + 'static {
+    fn end_point_of_error<'input>(self, line: usize, column: usize) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self).end_point_of_error(line, column)
     }
 
     /// Turns this error value into a [SimpleError] the error itself
-    fn to_parsing_error<'input>(self) -> SimpleError<'input> where Self: Sized + 'static {
+    fn to_parsing_error<'input>(self) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self)
     }
 
     /// Turns this error value into a [SimpleError] the error itself and another error which caused
     /// this one.
-    fn with_cause<'input, PError: Into<SimpleError<'input>>>(self, cause: PError) -> SimpleError<'input> where Self: Sized + 'static {
+    fn with_cause<'input, PError: Into<SimpleError<'input>>>(self, cause: PError) -> SimpleError<'input> where Self: Sized + 'input {
         SimpleError::new().error_detail(self).with_cause(cause.into())
     }
 
     /// Turns this error into a [SimpleErrorDisplayInfo], which will hold at most a reason and a
     /// solution.
-    fn to_display_struct(self, colorize: bool) -> SimpleErrorDisplayInfo where Self: Sized + 'static {
+    fn to_display_struct(self, colorize: bool) -> SimpleErrorDisplayInfo where Self: Sized {
         SimpleError::new().error_detail(self).as_display_struct(colorize)
     }
 
 }
 
 /// Deref implementation of SimpleErrorDetail for Arc
-impl SimpleErrorDetail for Arc<dyn SimpleErrorDetail> {
+impl <'lf> SimpleErrorDetail for Arc<dyn SimpleErrorDetail+ 'lf> {
     /// Deref implementation of SimpleErrorDetail for Arc
     fn explain_error(&self) -> SimpleErrorExplanation {
         (&**self).explain_error()

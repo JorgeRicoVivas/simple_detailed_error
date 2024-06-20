@@ -15,14 +15,14 @@ use crate::simple_error_explanation::SimpleErrorExplanation;
 #[derive(Debug, Default, Clone)]
 pub struct SimpleError<'input> {
     where_: Option<&'input str>,
-    error_detail: Option<Arc<dyn SimpleErrorDetail>>,
+    error_detail: Option<Arc<dyn SimpleErrorDetail + 'input>>,
     start_point_of_error: Option<(usize, usize)>,
     end_point_of_error: Option<(usize, usize)>,
     causes: Vec<SimpleError<'input>>,
 }
 
 /// Creates a SimpleError whose details is this owned value implementing SimpleErrorDetail
-impl<'input, T: SimpleErrorDetail + 'static> From<T> for SimpleError<'input> {
+impl<'input, T: SimpleErrorDetail + 'input> From<T> for SimpleError<'input> {
     /// Creates a SimpleError whose details is this value
     fn from(value: T) -> Self {
         SimpleError::new().error_detail(value)
@@ -54,7 +54,7 @@ impl<'input> SimpleError<'input> {
     /// Responds to: What and how to solve it.
     ///
     /// Indicates the error detail for this error
-    pub fn error_detail<ErrorDetail: SimpleErrorDetail + 'static>(mut self, error_detail: ErrorDetail) -> Self {
+    pub fn error_detail<ErrorDetail: SimpleErrorDetail + 'input>(mut self, error_detail: ErrorDetail) -> Self {
         self.error_detail = Some(Arc::new(error_detail));
         self
     }
@@ -105,7 +105,10 @@ impl<'input> SimpleError<'input> {
     }
 
     fn __as_display_struct(&self) -> SimpleErrorDisplayInfo {
-        let error_explanation = self.error_detail.as_ref().map(|ast_error| ast_error.explain_error()).unwrap_or_default();
+        let error_explanation = match &self.error_detail{
+            Some(error_detail) => error_detail.explain_error(),
+            None => Default::default(),
+        };
 
         #[cfg(feature = "colorization")]
         let SimpleErrorExplanation { whole_marker: general_colorizer, explanation: error_description, solution, colorization_markers: substring_colorizers } = error_explanation;
