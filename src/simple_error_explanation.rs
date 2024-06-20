@@ -3,7 +3,7 @@ use alloc::vec::Vec;
 
 /// Holds a possible explanation and solution for an error, and for parsing errors it also holds a
 /// [Colorizer] for colorizing both the whole and parts of the input indicated on [SimpleError::at].
-#[derive(Default)]
+#[derive(Default, Debug, Clone)]
 pub struct SimpleErrorExplanation<'input> {
     pub(crate) explanation: Option<String>,
     pub(crate) solution: Option<String>,

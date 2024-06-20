@@ -1,15 +1,14 @@
 use alloc::sync::Arc;
 use core::fmt::Debug;
 
+use crate::simple_error::SimpleError;
 use crate::simple_error_explanation::SimpleErrorExplanation;
 use crate::SimpleErrorDisplayInfo;
-use crate::simple_error::SimpleError;
 
 /// Implementors give a textual explanation on why an error happen and how to solve it through the
 /// method [SimpleErrorDetail::explain_error], this means you'll implement this trait for your
 /// specific error types.
 pub trait SimpleErrorDetail: Debug {
-
     /// Explains what the happening of this error ([SimpleErrorExplanation::explanation]) and how to
     /// solve it [SimpleErrorExplanation::solution].
     ///
@@ -54,11 +53,10 @@ pub trait SimpleErrorDetail: Debug {
     fn to_display_struct(self, colorize: bool) -> SimpleErrorDisplayInfo where Self: Sized {
         SimpleError::new().error_detail(self).as_display_struct(colorize)
     }
-
 }
 
 /// Deref implementation of SimpleErrorDetail for Arc
-impl <'lf> SimpleErrorDetail for Arc<dyn SimpleErrorDetail+ 'lf> {
+impl<'lf> SimpleErrorDetail for Arc<dyn SimpleErrorDetail + 'lf> {
     /// Deref implementation of SimpleErrorDetail for Arc
     fn explain_error(&self) -> SimpleErrorExplanation {
         (&**self).explain_error()
@@ -70,5 +68,35 @@ impl<T: SimpleErrorDetail> SimpleErrorDetail for Arc<T> {
     /// Deref implementation of SimpleErrorDetail for Arc of anything that is [SimpleErrorDetail].
     fn explain_error(&self) -> SimpleErrorExplanation {
         (&**self).explain_error()
+    }
+}
+
+/// SimpleErrorExplanation implements SimpleErrorDetail by giving a copy of itself as an error
+/// explanation.
+impl<'input> SimpleErrorDetail for SimpleErrorExplanation<'input> {
+    /// SimpleErrorExplanation implements SimpleErrorDetail by giving a copy of itself as an error
+    /// explanation.
+    fn explain_error(&self) -> SimpleErrorExplanation {
+        (&*self).clone()
+    }
+}
+
+/// String can be used as an SimpleErrorExplanation whose explanation is a copy of this String, this
+/// is useful if you don't want to create a type for your errors
+impl SimpleErrorDetail for String {
+    /// String can be used as an SimpleErrorExplanation whose explanation is a copy of this String, this
+    /// is useful if you don't want to create a type for your errors
+    fn explain_error(&self) -> SimpleErrorExplanation {
+        SimpleErrorExplanation::new().explanation(self.clone())
+    }
+}
+
+/// String can be used as an SimpleErrorExplanation whose explanation an owned copy of this str,
+/// this is useful if you don't want to create a type for your errors
+impl SimpleErrorDetail for str {
+    /// String can be used as an SimpleErrorExplanation whose explanation an owned copy of this str,
+    /// this is useful if you don't want to create a type for your errors
+    fn explain_error(&self) -> SimpleErrorExplanation {
+        SimpleErrorExplanation::new().explanation(self)
     }
 }
