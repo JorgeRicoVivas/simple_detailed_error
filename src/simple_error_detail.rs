@@ -90,13 +90,3 @@ impl SimpleErrorDetail for String {
         SimpleErrorExplanation::new().explanation(self.clone())
     }
 }
-
-/// String can be used as an SimpleErrorExplanation whose explanation an owned copy of this str,
-/// this is useful if you don't want to create a type for your errors
-impl SimpleErrorDetail for str {
-    /// String can be used as an SimpleErrorExplanation whose explanation an owned copy of this str,
-    /// this is useful if you don't want to create a type for your errors
-    fn explain_error(&self) -> SimpleErrorExplanation {
-        SimpleErrorExplanation::new().explanation(self)
-    }
-}
