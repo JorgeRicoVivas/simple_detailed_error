@@ -7,7 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Added getters for simple_error.rs" />
+    <list default="true" id="3ff3b4f1-4ab6-4515-9fc0-9089f2c09bba" name="Changes" comment="Fixed bug where 'Position' took start position as it was both start and end position." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -160,6 +160,7 @@
       <workItem from="1718948113544" duration="556000" />
       <workItem from="1719006957092" duration="30000" />
       <workItem from="1719051875477" duration="386000" />
+      <workItem from="1719052881567" duration="106000" />
     </task>
     <task id="LOCAL-00001" summary="Added documentation on every item.">
       <option name="closed" value="true" />
@@ -241,7 +242,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719052255195</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Fixed bug where 'Position' took start position as it was both start and end position.">
+      <option name="closed" value="true" />
+      <created>1719052979904</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1719052979904</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,6 +261,7 @@
     <MESSAGE value="Corrected spans colors." />
     <MESSAGE value="Relaxed lifetime of SimpleError" />
     <MESSAGE value="Added getters for simple_error.rs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added getters for simple_error.rs" />
+    <MESSAGE value="Fixed bug where 'Position' took start position as it was both start and end position." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug where 'Position' took start position as it was both start and end position." />
   </component>
 </project>

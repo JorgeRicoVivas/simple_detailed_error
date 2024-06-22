@@ -83,7 +83,7 @@ impl<'input> SimpleErrorDetail for SimpleErrorExplanation<'input> {
 
 /// String can be used as an SimpleErrorExplanation whose explanation is a copy of this String, this
 /// is useful if you don't want to create a type for your errors
-impl SimpleErrorDetail for String {
+impl SimpleErrorDetail for alloc::string::String {
     /// String can be used as an SimpleErrorExplanation whose explanation is a copy of this String, this
     /// is useful if you don't want to create a type for your errors
     fn explain_error(&self) -> SimpleErrorExplanation {
