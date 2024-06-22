@@ -199,4 +199,35 @@ impl<'input> SimpleError<'input> {
         }
         current_stack.pop_front();
     }
+
+    /// Returns the value for the indicated [SimpleError::at], it will be None if you haven't set it
+    /// before through said function.
+    pub fn current_at(&self) -> &Option<&'input str> {
+        &self.where_
+    }
+
+    /// Returns the value for the indicated [SimpleError::error_detail], it will be None if you
+    /// haven't set it before through said function.
+    pub fn current_error_detail(&self) -> &Option<Arc<dyn SimpleErrorDetail + 'input>> {
+        &self.error_detail
+    }
+
+    /// Returns the value for the indicated [SimpleError::start_point_of_error], it will be None if
+    /// you haven't set it before through said function.
+    pub fn current_start_point_of_error(&self) -> &Option<(usize, usize)> {
+        &self.start_point_of_error
+    }
+
+    /// Returns the value for the indicated [SimpleError::end_point_of_error], it will be None if
+    /// you haven't set it before through said function.
+    pub fn current_end_point_of_error(&self) -> &Option<(usize, usize)> {
+        &self.end_point_of_error
+    }
+
+    /// Returns the value for the causes indicated through [SimpleError::with_cause] or/and
+    /// [SimpleError::add_cause], said vec will be empty if you haven't called any of these
+    /// functions before.
+    pub fn current_causes(&self) -> &Vec<SimpleError<'input>> {
+        &self.causes
+    }
 }
