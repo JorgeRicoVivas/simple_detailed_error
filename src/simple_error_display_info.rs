@@ -107,9 +107,9 @@ impl SimpleErrorDisplayInfo {
     fn __as_display_string(&self, is_displaying_as_cause_of_other: bool) -> Option<String> {
         let where_ = &self.at;
         let location = &self.on_line_and_column.map(|(line_of_start, column_of_start)| {
-            format!("From line {line_of_start} and column {column_of_start}{}",
-                    self.on_line_and_column.map(|(line_of_end, column_of_end)|
-                        format!(" to line {line_of_end} and column {column_of_end}")).unwrap_or_default())
+            format!("On line {line_of_start} and column {column_of_start}{}",
+                    self.up_to_line_an_column.map(|(line_of_end, column_of_end)|
+                        format!(" up to line {line_of_end} and column {column_of_end}")).unwrap_or_default())
         });
         let description = &self.reason.clone().or(Some("Unexplained error".to_string()));
         let solution = &self.solution;
