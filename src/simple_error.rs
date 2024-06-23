@@ -1,5 +1,5 @@
 use alloc::collections::VecDeque;
-use alloc::string::ToString;
+use alloc::string::{String, ToString};
 use alloc::sync::Arc;
 use alloc::vec;
 use alloc::vec::Vec;
@@ -14,12 +14,28 @@ use crate::simple_error_explanation::SimpleErrorExplanation;
 /// end, and a &str to where it happened.
 #[derive(Debug, Default, Clone)]
 pub struct SimpleError<'input> {
-    where_: Option<&'input str>,
+    where_: Option<At<'input>>,
     error_detail: Option<Arc<dyn SimpleErrorDetail + 'input>>,
     start_point_of_error: Option<(usize, usize)>,
     end_point_of_error: Option<(usize, usize)>,
     causes: Vec<SimpleError<'input>>,
 }
+
+#[derive(Debug, Clone)]
+enum At<'input> {
+    Referenced(&'input str),
+    Owned(String),
+}
+
+impl <'input> At<'input> {
+    fn as_str(&self)->&str{
+        match self{
+            At::Referenced(referenced) => {*referenced}
+            At::Owned(owned) => {&*owned}
+        }
+    }
+}
+
 
 /// Creates a SimpleError whose details is this owned value implementing SimpleErrorDetail
 impl<'input, T: SimpleErrorDetail + 'input> From<T> for SimpleError<'input> {
@@ -63,7 +79,15 @@ impl<'input> SimpleError<'input> {
     ///
     /// Adds a referenced string to show where the error happened, for example 'At: let a = ...'.
     pub fn at(mut self, location_str: &'input str) -> Self {
-        self.where_ = Some(location_str);
+        self.where_ = Some(At::Referenced(location_str));
+        self
+    }
+
+    /// Responds to: Where did it happen, usually on parsing errors.
+    ///
+    /// Adds a referenced string to show where the error happened, for example 'At: let a = ...'.
+    pub fn at_owned<T:ToString>(mut self, location_str: T) -> Self {
+        self.where_ = Some(At::Owned(location_str.to_string()));
         self
     }
 
@@ -105,23 +129,23 @@ impl<'input> SimpleError<'input> {
     }
 
     fn __as_display_struct(&self) -> SimpleErrorDisplayInfo {
-        let error_explanation =  self.error_detail.as_ref()
-            .map(|error_detail|error_detail.explain_error())
+        let error_explanation = self.error_detail.as_ref()
+            .map(|error_detail| error_detail.explain_error())
             .unwrap_or_default();
 
         #[cfg(feature = "colorization")]
-        let SimpleErrorExplanation { whole_marker: general_colorizer, explanation: error_description, solution, colorization_markers: substring_colorizers } = error_explanation;
+            let SimpleErrorExplanation { whole_marker: general_colorizer, explanation: error_description, solution, colorization_markers: substring_colorizers } = error_explanation;
         #[cfg(not(feature = "colorization"))]
-        let SimpleErrorExplanation { explanation: error_description, solution, .. } = error_explanation;
+            let SimpleErrorExplanation { explanation: error_description, solution, .. } = error_explanation;
 
 
         #[cfg(feature = "colorization")]
             let where_ = self.where_.clone()
-            .map(|where_| string_colorization::colorize(where_, general_colorizer, substring_colorizers))
+            .map(|where_| string_colorization::colorize(where_.as_str(), general_colorizer, substring_colorizers))
             .filter(|string| !string.is_empty()).map(|string| string.trim().to_string());
         #[cfg(not(feature = "colorization"))]
             let where_ = self.where_.clone()
-            .filter(|string| !string.is_empty()).map(|string| string.trim().to_string());
+            .filter(|string| !string.as_str().is_empty()).map(|string| string.as_str().trim().to_string());
 
 
         let mut unexplained_causes = 0;
@@ -202,8 +226,8 @@ impl<'input> SimpleError<'input> {
 
     /// Returns the value for the indicated [SimpleError::at], it will be None if you haven't set it
     /// before through said function.
-    pub fn current_at(&self) -> &Option<&'input str> {
-        &self.where_
+    pub fn current_at(&self) -> Option<&str> {
+        self.where_.as_ref().map(|where_|where_.as_str())
     }
 
     /// Returns the value for the indicated [SimpleError::error_detail], it will be None if you
