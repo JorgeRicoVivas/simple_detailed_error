@@ -21,6 +21,22 @@ pub struct SimpleError<'input> {
     causes: Vec<SimpleError<'input>>,
 }
 
+impl From<SimpleErrorDisplayInfo> for SimpleError<'_> {
+    fn from(value: SimpleErrorDisplayInfo) -> Self {
+        let mut res = Self{
+            where_: value.at.map(|at|At::Owned(at)),
+            error_detail: if value.reason.is_some()||value.solution.is_some(){Some(Arc::new((value.reason, value.solution)))}else{None},
+            start_point_of_error: value.on_line_and_column,
+            end_point_of_error: value.up_to_line_an_column,
+            causes: value.explained_causes.into_iter().map(|cause|SimpleError::from(cause)).collect(),
+        };
+        for _ in 0..value.unexplained_causes{
+            res.causes.push(SimpleError::new())
+        }
+        res
+    }
+}
+
 #[derive(Debug, Clone)]
 enum At<'input> {
     Referenced(&'input str),

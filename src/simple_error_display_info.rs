@@ -28,20 +28,20 @@ use crate::formatting::{ident_lines_except_first, join_strings, pluralize};
 pub struct SimpleErrorDisplayInfo {
     /// Where the errors happen, this is usually an input on a Parsing error, like an AST-Building
     /// error.
-    at: Option<String>,
+    pub(crate) at: Option<String>,
     /// What / Why the error happen.
-    reason: Option<String>,
+    pub(crate) reason: Option<String>,
     /// How to solve the error.
-    solution: Option<String>,
+    pub(crate) solution: Option<String>,
     /// From which line and column the error happens.
-    on_line_and_column: Option<(usize, usize)>,
+    pub(crate) on_line_and_column: Option<(usize, usize)>,
     /// Upto which line and column the error happens.
-    up_to_line_an_column: Option<(usize, usize)>,
+    pub(crate) up_to_line_an_column: Option<(usize, usize)>,
     /// Number of causes from which their [SimpleErrorDisplayInfo] contents were empty according to
     /// not matching [SimpleErrorDisplayInfo::is_explained].
-    unexplained_causes: usize,
+    pub(crate) unexplained_causes: usize,
     /// Displays of causes that were actually explained.
-    explained_causes: Vec<SimpleErrorDisplayInfo>,
+    pub(crate) explained_causes: Vec<SimpleErrorDisplayInfo>,
 }
 
 /// Implements display by calling [SimpleErrorDisplayInfo::as_display_string]

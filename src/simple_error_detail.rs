@@ -91,3 +91,20 @@ impl SimpleErrorDetail for String {
         SimpleErrorExplanation::new().explanation(self.clone())
     }
 }
+
+/// String can be used as an SimpleErrorExplanation whose explanation and solution are a copy of
+/// this String pair, this is useful if you don't want to create a type for your errors
+impl SimpleErrorDetail for (Option<String>, Option<String>) {
+    /// String can be used as an SimpleErrorExplanation whose explanation and solution are a copy of
+    /// this String pair, this is useful if you don't want to create a type for your errors
+    fn explain_error(&self) -> SimpleErrorExplanation {
+        let mut res = SimpleErrorExplanation::new();
+        if let Some(explanation) = &self.0{
+            res=res.explanation(explanation.clone());
+        }
+        if let Some(solution) = &self.1{
+            res=res.solution(solution.clone());
+        }
+        res
+    }
+}
