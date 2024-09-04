@@ -1,5 +1,5 @@
 use alloc::string::{String, ToString};
-
+use alloc::vec::Vec;
 
 /// Holds a possible explanation and solution for an error, and for parsing errors it also holds a
 /// [Colorizer] for colorizing both the whole and parts of the input indicated on [SimpleError::at].
