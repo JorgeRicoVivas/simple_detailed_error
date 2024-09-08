@@ -7,7 +7,7 @@ description = "Stack and specify errors explainations saying what happened, why,
 repository = "https://github.com/JorgeRicoVivas/simple_detailed_error"
 keywords = ["error", "detail", "detailed-error", "simple-error", "backtrace"]
 categories = ["rust-patterns", "no-std", "parsing", "visualization"]
-license-file = "LICENSE.txt"
+license-file = "LICENSE"
 readme = "README.md"
 
 [lib]
